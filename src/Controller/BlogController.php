@@ -63,17 +63,21 @@ class BlogController extends AbstractController
     }
 
     /**
-     * @Route("blog/category/{category}", name="category_showAllByCategory")
+     * @Route("/category/{category}", name="category_showAllByCategory")
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAllByCategory($title): Response
+    public function showAllByCategory($category): Response
     {
-        $category = new Category();
         $repository = $this->getDoctrine()->getRepository(Category::class);
-        $category = $repository->findOneBy($title);
-        $articles = $category->getArticles();
-
-        return $this->render('blog/category.html.twig', ['categories' => $category, 'articles' => $articles]);
+        $category = $repository->findOneBy(['name'=>$category]);
+        $repository = $this->getDoctrine()->getRepository(Article::class);
+        $articles = $repository->findBy(
+            ['category'=> $category]
+        );
+        return $this->render(
+            'blog/category1.html.twig',
+            ['category' => $category, 'articles'=> $articles]
+        );
     }
 
     /**
