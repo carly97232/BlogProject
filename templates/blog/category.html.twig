@@ -1,15 +1,17 @@
-
 {% extends 'base.html.twig' %}
 
-{% block title %} Les categories {% endblock %}
 
 {% block body %}
-        <h1>{{ category.name }}</h1>
-        {% for article in category.articles %}
-            <li>
-                <h2>{{ article.title }}</h2>
-                <p><img src="{{ article.picture }}"/></p>
-                <p>{{ article.content }}</p>
-            </li>
-        {% endfor %}
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+
+    {% for category in categories %}
+        <div>
+            <h2>{{ category.name }}</h2>
+        </div>
+    {% endfor %}
+
 {% endblock %}

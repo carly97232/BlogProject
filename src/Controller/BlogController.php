@@ -10,10 +10,13 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Category;
+use App\Form\ArticleSearchType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Bundle\DoctrineBundle\Repository;
 
 
 class BlogController extends AbstractController
@@ -79,7 +82,7 @@ class BlogController extends AbstractController
      * @Route("/articles", name="blog_index")
      * @return Response A response instance
      */
-    public function index() : Response
+    public function index(Request $request) : Response
     {
         $articles = $this->getDoctrine()
             ->getRepository(Article::class)
@@ -91,29 +94,17 @@ class BlogController extends AbstractController
             );
         }
 
-        return $this->render(
-            'blog/index.html.twig',
-            ['articles' => $articles]
+        $form = $this->createForm(
+            ArticleSearchType::class,
+            null,
+            ['method' => Request::METHOD_POST]
         );
-    }
-    /**
-     * @Route("/category/{category}", name="blog_show_category")
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function showByCategory(string $category): Response
-    {
-        $category = new Category();
-        $category = $this->getDoctrine()
-            ->getRepository(Category::class);
-        $articles = $category->getArticles()
-            ->findBy(
-            ['articles'=> $articles],
-            ['id'=>'DESC'],
-            3
-        );
+
         return $this->render(
-            'blog/category.html.twig',
-            ['category' => $category, 'articles'=> $articles]
+            'blog/index.html.twig', [
+                'articles' => $articles,
+                'form' => $form->createView(),
+            ]
         );
     }
 }
