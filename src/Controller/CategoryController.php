@@ -8,7 +8,7 @@
 
 namespace App\Controller;
 
-
+use App\Entity\Article;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,13 +19,24 @@ use Symfony\Component\HttpFoundation\Request;
 class CategoryController extends AbstractController
 {
     /**
-     * @Route("/category/{name}", name="category_show")
-     * @param Category $category
+     * @Route("/category/desc/{category}", name="blog_show_category")
+     * @param string $category
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function show(Category $category) :Response
+    public function showByCategory(string $category): Response
     {
-        return $this->render('category.html.twig', ['category'=>$category]);
+        $repository = $this->getDoctrine()->getRepository(Category::class);
+        $category = $repository->findOneBy(['name'=>$category]);
+        $repository = $this->getDoctrine()->getRepository(Article::class);
+        $articles = $repository->findBy(
+            ['category'=> $category],
+            ['id'=>'DESC'],
+            3
+        );
+        return $this->render(
+            'blog/category2.html.twig',
+            ['category' => $category, 'articles'=> $articles]
+        );
     }
 
     /**
